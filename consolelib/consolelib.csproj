@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>ConsoleLib</Title>
+        <Description>C# Library for some CLI utilities such as taking arguments, and Console IO</Description>
+        <RepositoryUrl>https://github.com/CoolandonRS/consolelib</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <UserSecretsId>93410b84-a4e7-4d58-9149-3a35c7e3ebea</UserSecretsId>
+    </PropertyGroup>
+</Project>
