@@ -10,5 +10,8 @@
         <RepositoryUrl>https://github.com/CoolandonRS/consolelib</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <UserSecretsId>93410b84-a4e7-4d58-9149-3a35c7e3ebea</UserSecretsId>
+        <RootNamespace>CoolandonRS.consolelib</RootNamespace>
+        <PackageId>CoolandonRS.consolelib</PackageId>
+        <Authors>CoolandonRS</Authors>
     </PropertyGroup>
 </Project>

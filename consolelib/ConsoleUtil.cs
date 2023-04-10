@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace consolelib;
+namespace CoolandonRS.consolelib;
 
 public static class ConsoleUtil {
     public static void WriteColored(string msg, ConsoleColor? foreground = null, ConsoleColor? background = null) {

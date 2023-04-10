@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace consolelib; 
+namespace CoolandonRS.consolelib; 
 
 public class ArgHandler {
     private Dictionary<string, ArgData> valueArgs;

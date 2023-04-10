@@ -1,2 +1,2 @@
 global using NUnit.Framework;
-global using consolelib;
+global using CoolandonRS.consolelib;

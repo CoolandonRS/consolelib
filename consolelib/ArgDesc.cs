@@ -1,4 +1,4 @@
-﻿namespace consolelib; 
+﻿namespace CoolandonRS.consolelib; 
 
 public class ArgDesc {
     public readonly string Template;
