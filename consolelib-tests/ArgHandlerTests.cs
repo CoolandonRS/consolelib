@@ -10,7 +10,8 @@ public class ArgHandlerTests {
             { "val", new ArgData(new ArgDesc("--val=[int]", "Test Value")) }
         }, new Dictionary<char, FlagData>() {
             { 'f', new FlagData(new ArgDesc("-f", "Flag")) },
-            { 'T', new FlagData(new ArgDesc("-T", "Test"))}
+            { 'T', new FlagData(new ArgDesc("-T", "Test"))},
+            { 'f', new FlagData(new ArgDesc("-Q", "\"Quoted Test\"")) }
         });
     }
 
@@ -23,6 +24,11 @@ public class ArgHandlerTests {
     [Test]
     public void GetValue() {
         Assert.That(handler.GetValue("val").IsSet, Is.False, "GetValue Failure");
+    }
+
+    [Test]
+    public void QuotedInput() {
+        
     }
 
     [Test]

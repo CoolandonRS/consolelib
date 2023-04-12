@@ -25,6 +25,26 @@ public class ArgHandler {
     /// </summary>
     /// <param name="args"></param>
     public void ParseArgs(string[] args) {
+        var newArgs = new List<string>();
+        var tempArg = "";
+        var inQuote = false;
+        foreach (var t in args) {
+            if (t.Contains('"')) {
+                if (inQuote) {
+                    inQuote = false;
+                    newArgs.Add(tempArg);
+                    tempArg = "";
+                } else {
+                    inQuote = true;
+                }
+            }
+            if (inQuote) {
+                tempArg += t;
+            } else if(!t.Contains('"')) {
+                newArgs.Add(t);
+            }
+        }
+        Console.WriteLine(newArgs);
         var errs = new List<string>();
         var flagRegex = new Regex("^-[a-zA-Z?]+$");
         var valueRegex = new Regex("^--[\\.\\\\/a-zA-Z0-9:_-]+=[\\.\\\\/a-zA-Z0-9:_-]+$");
