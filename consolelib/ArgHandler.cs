@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace CoolandonRS.consolelib; 
@@ -25,13 +26,13 @@ public class ArgHandler {
     /// </summary>
     /// <param name="args"></param>
     public void ParseArgs(string[] args) {
+        args = args.Select(str => str.Replace("\"", "")).ToArray();
         var errs = new List<string>();
         var flagRegex = new Regex("^-[a-zA-Z?]+$");
-        var valueRegex = new Regex("^--[\\.\\\\/a-zA-Z0-9:_-]+=[\\.\\\\/a-zA-Z0-9:_-]+$");
+        var valueRegex = new Regex("^--[\\.\\\\/a-zA-Z0-9:_\\- ]+=[\\.\\\\/a-zA-Z0-9:_\\- ]+$");
         
         var flags = args.Where(str => flagRegex.IsMatch(str));
         var values = args.Where(str => valueRegex.IsMatch(str));
-        
         foreach (var flag in flags) {
             var chars = flag.Replace("-", "").ToCharArray();
             foreach (var c in chars) {
