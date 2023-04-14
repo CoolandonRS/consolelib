@@ -2,33 +2,27 @@
 
 public class ArgHandlerTests {
     private ArgHandler handler;
-    private static string helpVerif = "-f\n\tFlag\n-T\n\tTest\n-?\n\tShows help\n--val=[int]\n\tTest Value";
+    private static string helpVerif = "-f\n\tFlag\n-T\n\tTest\n-?\n\tShows help\n--val=[int]\n\tTest Value\n--quote=[string]\n\tQuoted Test";
     
     [SetUp]
     public void SetUp() {
         handler = new ArgHandler(new Dictionary<string, ArgData>() {
-            { "val", new ArgData(new ArgDesc("--val=[int]", "Test Value")) }
+            { "val", new ArgData(new ArgDesc("--val=[int]", "Test Value")) },
+            { "quote", new ArgData(new ArgDesc("--quote=[string]", "Quoted Test")) }
         }, new Dictionary<char, FlagData>() {
             { 'f', new FlagData(new ArgDesc("-f", "Flag")) },
-            { 'T', new FlagData(new ArgDesc("-T", "Test"))},
-            { 'f', new FlagData(new ArgDesc("-Q", "\"Quoted Test\"")) }
+            { 'T', new FlagData(new ArgDesc("-T", "Test")) }
         });
     }
 
     [Test]
     public void GetHelpString() {
-        
         Assert.That(handler.GetHelpString(), Is.EqualTo(helpVerif), "Incorrect HelpString");
     }
 
     [Test]
     public void GetValue() {
         Assert.That(handler.GetValue("val").IsSet, Is.False, "GetValue Failure");
-    }
-
-    [Test]
-    public void QuotedInput() {
-        
     }
 
     [Test]
@@ -64,6 +58,12 @@ public class ArgHandlerTests {
     public void ParseArgValue() {
         handler.ParseArgs(new[] {"--val=123"});
         Assert.That(handler.GetValue("val").AsInt(), Is.EqualTo(123), "Value Parse Failure");
+    }
+    
+    [Test]
+    public void ParseQuotedArgValue() {
+        handler.ParseArgs(new[] {"--quote=\"Hello Friend\""});
+        Assert.That(handler.GetValue("quote").AsString(), Is.EqualTo("Hello Friend"), "Quoted Value Parse Failure");
     }
 
     [Test]
