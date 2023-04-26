@@ -13,5 +13,6 @@
         <RootNamespace>CoolandonRS.consolelib</RootNamespace>
         <PackageId>CoolandonRS.consolelib</PackageId>
         <Authors>CoolandonRS</Authors>
+        <Version>1.1.0</Version>
     </PropertyGroup>
 </Project>
