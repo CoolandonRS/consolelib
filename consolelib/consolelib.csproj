@@ -6,13 +6,20 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>ConsoleLib</Title>
-        <Description>C# Library for some CLI utilities such as taking arguments, and Console IO</Description>
+        <Description>C# Library for some CLI utilities such as taking arguments, colored output, and collecting user input</Description>
         <RepositoryUrl>https://github.com/CoolandonRS/consolelib</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <UserSecretsId>93410b84-a4e7-4d58-9149-3a35c7e3ebea</UserSecretsId>
         <RootNamespace>CoolandonRS.consolelib</RootNamespace>
         <PackageId>CoolandonRS.consolelib</PackageId>
         <Authors>CoolandonRS</Authors>
-        <Version>1.1.0</Version>
+        <Version>1.1.1</Version>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
+        <PackageTags>cli console args arguments</PackageTags>
+        <PackageReleaseNotes>clean up nuget package</PackageReleaseNotes>
     </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="../README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 </Project>

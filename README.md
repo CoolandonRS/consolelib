@@ -1,3 +1,3 @@
 # consolelib
 
-C# Library for some CLI utilities such as taking arguments, and Console IO
+C# Library for some CLI utilities such as taking arguments, colored output, and collecting user input
