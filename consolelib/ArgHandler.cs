@@ -1,14 +1,15 @@
-﻿namespace CoolandonRS.consolelib; 
+﻿using System.Collections;
+
+namespace CoolandonRS.consolelib; 
 
 public class ArgHandler {
-    private Dictionary<string, Arg<object>> args;
-    public readonly string[] implicitArgs;
+    private ArrayList args;
     
-    public void Parse(string[] givenArgs) {
+    public void Parse(string[] args) {
         
     }
 
-    public ArgHandler(params Arg<object>[] args) {
-        this.args = args.ToDictionary(arg => arg.name, arg => arg);
+    public void AddArg<T>(Arg<T> arg) {
+        
     }
 }
