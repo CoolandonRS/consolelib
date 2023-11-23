@@ -18,6 +18,14 @@
         <PackageTags>cli console args arguments</PackageTags>
         <PackageReleaseNotes>clean up nuget package</PackageReleaseNotes>
     </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE;CONTRACTS_FULL</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACE;CONTRACTS_FULL</DefineConstants>
+    </PropertyGroup>
     
     <ItemGroup>
         <None Include="../README.md" Pack="true" PackagePath="\"/>
