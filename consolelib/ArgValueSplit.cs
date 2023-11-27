@@ -14,7 +14,7 @@ public class ArgValueSplit {
         return (Status.Success, split[0], string.Join("", split[1..]));
     }
     
-    internal ArgValueSplit(char[] delimiters) {
+    public ArgValueSplit(char[] delimiters) {
         if (delimiters.Contains(' ')) {
             this.delimiters = delimiters.Where(c => c != ' ').ToArray();
             this.spaceDelimited = true;
