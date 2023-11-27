@@ -9,9 +9,9 @@ public class ArgValueSplit {
     private bool spaceDelimited;
 
     internal (Status status, string prefix, string? postfix) Parse(string val) {
-        var split = val.Split(delimiters);
+        var split = val.Split(delimiters, 2);
         if (split.Length < 2) return (spaceDelimited ? Status.Advance : Status.Failure, val, null);
-        return (Status.Success, split[0], string.Join("", split[1..]));
+        return (Status.Success, split[0], string.Join("", split[1]));
     }
     
     public ArgValueSplit(char[] delimiters) {

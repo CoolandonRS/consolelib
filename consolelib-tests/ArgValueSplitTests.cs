@@ -33,6 +33,46 @@ public class ArgValueSplitTests {
         });
     }
 
+    [Test]
+    public static void Failure([Random(33, 126, 5)] byte b) {
+        var c = (char)b;
+        Console.WriteLine(c);
+        var split = new ArgValueSplit(new[] { c });
+        var s = RandomString(c);
+        var o = split.Parse(s);
+        Assert.Multiple(() => {
+            Assert.That(o.status, Is.EqualTo(ArgValueSplit.Status.Failure), "Non failure return status");
+            Assert.That(o.prefix, Is.EqualTo(s), "Prefix passthrough failure");
+            Assert.That(o.postfix, Is.Null, "Non null postfix");
+        });
+    }
+    
+    [Test]
+    public static void SpaceDelimited() {
+        var split = new ArgValueSplit(new[] { ' ' });
+        var s = RandomString(' ');
+        var o = split.Parse(s);
+        Assert.Multiple(() => {
+            Assert.That(o.status, Is.EqualTo(ArgValueSplit.Status.Advance), "Non advance return status");
+            Assert.That(o.prefix, Is.EqualTo(s), "Prefix passthrough failure");
+            Assert.That(o.postfix, Is.Null, "Non null postfix");
+        });
+    }
+    
+    [Test]
+    public static void ReoccurringDelimiter([Random(33, 126, 5)] byte b) {
+        var c = (char)b;
+        Console.WriteLine(c);
+        var split = new ArgValueSplit(new[] { c });
+        string s1 = RandomString(c), s2 = RandomString(c);
+        var edited = $"{s2[..2]}{c}{s2[2..5]}{c}{s2[5..]}";
+        var o = split.Parse($"{s1}{c}{edited}");
+        Assert.Multiple(() => {
+            Assert.That(o.status, Is.EqualTo(ArgValueSplit.Status.Success), "Non success return status");
+            Assert.That(o.prefix, Is.EqualTo(s1), "Prefix failure");
+            Assert.That(o.postfix, Is.EqualTo(edited), "Postfix failure");
+        });
+    }
 
     private static string RandomString(char exclude) {
         var str = Path.GetRandomFileName();
