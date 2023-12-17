@@ -1,7 +1,4 @@
-﻿using System.Globalization;
-using NUnit.Framework.Internal;
-
-namespace consolelib_tests; 
+﻿namespace consolelib_tests; 
 
 [TestFixture, TestOf(typeof(ArgValueSplit))]
 public class ArgValueSplitTests {
