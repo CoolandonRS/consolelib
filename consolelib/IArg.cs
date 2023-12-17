@@ -24,4 +24,6 @@ public interface IArg {
     string GetRegex();
 
     string GetDesc();
+
+    string? GetCall();
 }

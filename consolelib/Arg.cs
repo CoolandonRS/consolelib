@@ -34,6 +34,7 @@ public class Arg<T> : IArg {
     public string GetName() => name;
     public string GetRegex() => prefixRgx.ToString();
     public string GetDesc() => desc;
+    public virtual string? GetCall() => null;
     
     public Arg(string name, string desc, Regex validator, ArgValueSplit? split, T @default, Func<string, T> cast) {
         this.name = name;

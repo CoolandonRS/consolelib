@@ -8,14 +8,8 @@ public class ArgHandler {
     private readonly Dictionary<string, IArg> namedArgs;
     private readonly IArg[] singleArgs;
     private readonly IArg[] nonSingleArgs;
-    private readonly bool doErrors;
-    private readonly bool unknownToImplicit;
-    private readonly string unknown;
-    private readonly string castFailure;
-    private readonly string duplicate;
-    private readonly string nonTrailingSingleValue;
-    private string[] implicitArgs = Array.Empty<string>();
-
+    private string[] implicitArgs = [];
+    private readonly ArgHandlerConfig config;
 
     #region Parse arguments
     
@@ -29,7 +23,7 @@ public class ArgHandler {
         var allImplicit = false;
         for (var i = 0; i < args.Length; i++) {
             var argStr = args[i];
-            if (allImplicit || !argStr.StartsWith("-")) { implicits.Add(argStr); continue; }
+            if (allImplicit || !argStr.StartsWith('-')) { implicits.Add(argStr); continue; }
             if (argStr == "--") { allImplicit = true; continue; }
             if (!argStr.StartsWith("--")) { ParseSingle(args, argStr, ref i); continue; }
             ParseNonSingle(args, argStr, ref i, implicits);
@@ -51,7 +45,7 @@ public class ArgHandler {
                     break;
                 }
                 if (j != last) {
-                    if (doErrors) Console.WriteLine(nonTrailingSingleValue, j);
+                    if (config.DoErrors) Console.WriteLine(config.NonTrailingSingleValueMessage, j);
                     continue;
                 }
                 try {
@@ -97,20 +91,20 @@ public class ArgHandler {
     
     private void PrintError(string argStr, IArg.SetStatus? setStatus, (string, Type)? argMeta, List<string>? implicits, bool single) {
         Contract.Requires((implicits == null) == single);
-        if (unknownToImplicit && setStatus == null && !single) {
+        if (config.UnknownToImplicit && setStatus == null && !single) {
             implicits!.Add(argStr);
             return;
         }
-        if (!doErrors) return;
+        if (!config.DoErrors) return;
         switch (setStatus) {
             case null:
-                Console.WriteLine(unknown, argStr);
+                Console.WriteLine(config.UnknownArgMessage, argStr);
                 break;
             case IArg.SetStatus.FailedCast:
-                Console.WriteLine(castFailure, argMeta!.Value.Item1, argMeta!.Value.Item2.Name);
+                Console.WriteLine(config.CastFailureMessage, argMeta!.Value.Item1, argMeta!.Value.Item2.Name);
                 break;
             case IArg.SetStatus.AlreadySet:
-                Console.WriteLine(duplicate, argMeta!.Value.Item1);
+                Console.WriteLine(config.DuplicateMessage, argMeta!.Value.Item1);
                 break;
             case IArg.SetStatus.Set: break;
             default: throw new InvalidEnumArgumentException();
@@ -122,7 +116,7 @@ public class ArgHandler {
 
     private const string helpPrefix = "--help, -h, -?\n  Print help\n";
     private readonly char[] regexTrim = { '-', '^', '$' };
-    public string GenerateHelp() => namedArgs.Values.Aggregate(helpPrefix, (current, arg) => current + $"{(arg.IsSingle() ? "-" : "--")}{arg.GetRegex().Trim(regexTrim)}\n  {arg.GetDesc()}\n");
+    public string GenerateHelp() => namedArgs.Values.Aggregate(helpPrefix, (current, arg) => current + $"{arg.GetCall() ?? (arg.IsSingle() ? "-" : "--") + arg.GetRegex().Trim(regexTrim)}\n  {arg.GetDesc()}\n");
 
     public string[] GetImplicits() => implicitArgs;
     public string GetImplicit(int n) => implicitArgs[n];
@@ -133,23 +127,16 @@ public class ArgHandler {
         return (T)arg.Get();
     }
 
-    public bool IsDefault(string name) {
-        return namedArgs[name].IsDefault();
-    }
+    public bool IsDefault(string name) => namedArgs[name].IsDefault();
     
-    public ArgHandler(params IArg[] args) : this(args, true) { }
+    public ArgHandler(ArgHandlerConfig config = new(), params IArg[] args) : this(args, config) { }
 
-    public ArgHandler(IArg[] args, bool doErrors, bool unknownToImplicit = false, string unknown = "Unknown Argument {0}", string castFailure = "Invalid Argument {0}, expected {1}", string duplicate = "Duplicate argument {0}", string nonTrailingSingleValue = "Single arguments with values must be the last of a chain.") {
-        List<IArg> single = new(), nonSingle = new();
+    public ArgHandler(IArg[] args, ArgHandlerConfig config = new()) {
+        List<IArg> single = [], nonSingle = [];
         foreach (var arg in args) { (arg.IsSingle() ? single : nonSingle).Add(arg); }
         this.namedArgs = args.ToDictionary(a => a.GetName(), a => a);
         this.singleArgs = single.ToArray();
         this.nonSingleArgs = nonSingle.ToArray();
-        this.doErrors = doErrors;
-        this.unknownToImplicit = unknownToImplicit;
-        this.unknown = unknown;
-        this.castFailure = castFailure;
-        this.duplicate = duplicate;
-        this.nonTrailingSingleValue = nonTrailingSingleValue;
+        this.config = config;
     }
 }
