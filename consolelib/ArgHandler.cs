@@ -18,7 +18,7 @@ public class ArgHandler {
             Console.Write(GenerateHelp());
             return;
         }
-        List<string> implicits = new();
+        List<string> implicits = [];
         var allImplicit = false;
         for (var i = 0; i < args.Length; i++) {
             var argStr = args[i];
@@ -44,17 +44,20 @@ public class ArgHandler {
                     break;
                 }
                 if (j != last) {
-                    if (config.DoErrors) Console.WriteLine(config.NonTrailingSingleValueMessage, j);
+                    if (config.DoErrors) {
+                        if (config.ErrorStyle == ArgHandlerConfig.ArgErrorStyle.Throw) throw new NonTrailingSingleValueArgException();
+                        Console.WriteLine(config.NonTrailingSingleValueMessage, j);
+                    }
                     continue;
                 }
                 try {
                     setStatus = arg.Set(args[++i]);
                 } catch (IndexOutOfRangeException) {
-                    setStatus = IArg.SetStatus.FailedCast;
+                    setStatus = IArg.SetStatus.Insufficient;
                 }
                 break;
             }
-            PrintError($"{c}", setStatus, argMeta, null, true);
+            DoError($"{c}", setStatus, argMeta, null, true);
         }
     }
 
@@ -77,7 +80,7 @@ public class ArgHandler {
                     try {
                         setStatus = arg.Set(args[++i]);
                     } catch (IndexOutOfRangeException) {
-                        setStatus = IArg.SetStatus.FailedCast;
+                        setStatus = IArg.SetStatus.Insufficient;
                     }
                     break;
                 default: continue;
@@ -85,11 +88,11 @@ public class ArgHandler {
             argMeta = (splitResult.prefix, arg.GetType());
             break;
         }
-        PrintError(argStr, setStatus, argMeta, implicits, false);
+        DoError(argStr, setStatus, argMeta, implicits, false);
     }
     
-    private void PrintError(string argStr, IArg.SetStatus? setStatus, (string, Type)? argMeta, List<string>? implicits, bool single) {
-        Contract.Requires((implicits == null) == single);
+    private void DoError(string argStr, IArg.SetStatus? setStatus, (string, Type)? argMeta, List<string>? implicits, bool single) {
+        if ((implicits == null) != single) throw new InvalidOperationException();
         if (config.UnknownToImplicit && setStatus == null && !single) {
             implicits!.Add(argStr);
             return;
@@ -97,13 +100,20 @@ public class ArgHandler {
         if (!config.DoErrors) return;
         switch (setStatus) {
             case null:
+                if (config.ErrorStyle == ArgHandlerConfig.ArgErrorStyle.Throw) throw new UnknownArgException();
                 Console.WriteLine(config.UnknownArgMessage, argStr);
                 break;
             case IArg.SetStatus.FailedCast:
+                if (config.ErrorStyle == ArgHandlerConfig.ArgErrorStyle.Throw) throw new CastFailureException();
                 Console.WriteLine(config.CastFailureMessage, argMeta!.Value.Item1, argMeta!.Value.Item2.Name);
                 break;
             case IArg.SetStatus.AlreadySet:
+                if (config.ErrorStyle == ArgHandlerConfig.ArgErrorStyle.Throw) throw new DuplicateArgException();
                 Console.WriteLine(config.DuplicateMessage, argMeta!.Value.Item1);
+                break;
+            case IArg.SetStatus.Insufficient:
+                if (config.ErrorStyle == ArgHandlerConfig.ArgErrorStyle.Throw) throw new InsufficientDataException();
+                Console.WriteLine(config.InsufficientMessage, argMeta!.Value.Item1);
                 break;
             case IArg.SetStatus.Set: break;
             default: throw new InvalidEnumArgumentException();
@@ -111,7 +121,6 @@ public class ArgHandler {
     }
     
     #endregion Parse arguments
-
 
     private const string helpPrefix = "--help, -h, -?\n  Print help\n";
     private readonly char[] regexTrim = { '-', '^', '$' };
@@ -122,14 +131,14 @@ public class ArgHandler {
 
     public T Get<T>(string name) {
         var arg = namedArgs[name];
-        Contract.Requires(arg.GetType().IsAssignableTo(typeof(T)));
+        if (!arg.Type().IsAssignableTo(typeof(T))) throw new InvalidCastException();
         return (T)arg.Get();
     }
 
     public bool IsDefault(string name) => namedArgs[name].IsDefault();
-    
-    public ArgHandler(ArgHandlerConfig config = new(), params IArg[] args) : this(args, config) { }
 
+    public ArgHandler(params IArg[] args) : this(new ArgHandlerConfig(), args) { }
+    public ArgHandler(ArgHandlerConfig config, params IArg[] args) : this(args, config) { }
     public ArgHandler(IArg[] args, ArgHandlerConfig config = new()) {
         List<IArg> single = [], nonSingle = [];
         foreach (var arg in args) { (arg.IsSingle() ? single : nonSingle).Add(arg); }

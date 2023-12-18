@@ -2,7 +2,7 @@
 
 public interface IArg {
     public enum SetStatus {
-        Set, FailedCast, AlreadySet
+        Set, FailedCast, AlreadySet, Insufficient
     }
 
     SetStatus Set(string val);
