@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics.Contracts;
+using CoolandonRS.consolelib.ArgContract;
 
 namespace CoolandonRS.consolelib; 
 
@@ -124,7 +125,7 @@ public class ArgHandler {
 
     private const string helpPrefix = "--help, -h, -?\n  Print help\n";
     private readonly char[] regexTrim = { '-', '^', '$' };
-    public string GenerateHelp() => namedArgs.Values.Aggregate(helpPrefix, (current, arg) => current + $"{arg.GetCall() ?? (arg.IsSingle() ? "-" : "--") + arg.GetRegex().Trim(regexTrim)}\n  {arg.GetDesc()}\n");
+    public virtual string GenerateHelp() => namedArgs.Values.Aggregate(helpPrefix, (current, arg) => current + $"{arg.GetCall() ?? (arg.IsSingle() ? "-" : "--") + arg.GetRegex().Trim(regexTrim)}\n  {arg.GetDesc()}\n");
 
     public string[] GetImplicits() => implicitArgs;
     public string GetImplicit(int n) => implicitArgs[n];
@@ -136,6 +137,12 @@ public class ArgHandler {
     }
 
     public bool IsDefault(string name) => namedArgs[name].IsDefault();
+
+    /// <summary>
+    /// Validates given a set of ArgContracts.
+    /// </summary>
+    /// <seealso cref="ArgContracts"/>
+    public bool Validate(params IArgContract[] contracts) => ArgContracts.And(contracts).Eval(this);
 
     public ArgHandler(params IArg[] args) : this(new ArgHandlerConfig(), args) { }
     public ArgHandler(ArgHandlerConfig config, params IArg[] args) : this(args, config) { }
