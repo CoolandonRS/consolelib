@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace CoolandonRS.consolelib.Args; 
+namespace CoolandonRS.consolelib.Arg; 
 
 /// <summary>
 /// For most common types, type.Parse will work fine. <br/> Ex: int.Parse(); <br/> <br/>

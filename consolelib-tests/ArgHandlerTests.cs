@@ -1,4 +1,5 @@
-﻿using CoolandonRS.consolelib.Args;
+﻿using CoolandonRS.consolelib.Arg;
+using CoolandonRS.consolelib.Arg.Builders;
 
 namespace consolelib_tests;
 

@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics.Contracts;
-using CoolandonRS.consolelib.ArgContract;
+using CoolandonRS.consolelib.Arg.Contracts;
 
-namespace CoolandonRS.consolelib; 
+namespace CoolandonRS.consolelib.Arg; 
 
 public class ArgHandler {
     private readonly Dictionary<string, IArg> namedArgs;

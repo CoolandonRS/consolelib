@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using CoolandonRS.consolelib.Args;
+using CoolandonRS.consolelib.Arg;
 
 namespace consolelib_tests;
 

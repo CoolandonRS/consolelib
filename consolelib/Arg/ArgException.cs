@@ -1,4 +1,4 @@
-﻿namespace CoolandonRS.consolelib;
+﻿namespace CoolandonRS.consolelib.Arg;
 
 public class ArgException : ArgumentException;
 

@@ -1,4 +1,4 @@
-﻿namespace CoolandonRS.consolelib.ArgContract;
+﻿namespace CoolandonRS.consolelib.Arg.Contracts;
 
 internal class LambdaArgContract : IArgContract {
     private readonly Func<ArgHandler, bool> func;

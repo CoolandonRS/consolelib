@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace CoolandonRS.consolelib;
 
@@ -18,7 +19,7 @@ public static class ConsoleUtil {
         Console.WriteLine();
     }
         
-    public static string RegexQuery(string prompt, string regex, bool newLine = false) {
+    public static string RegexQuery(string prompt, [StringSyntax("Regex")] string regex, bool newLine = false) {
         for (;;) {
             Console.Write(prompt + (newLine ? "\n" : ""));
             var input = Console.ReadLine()!;

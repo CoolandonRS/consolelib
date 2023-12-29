@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace CoolandonRS.consolelib; 
+namespace CoolandonRS.consolelib.Arg; 
 
 /// <summary>
 /// Raw class. Recommended to use a helper in <see cref="CoolandonRS.consolelib.Args.ValueArg">CoolandonRS.consolelib.Args</see> unless you know what you're doing.

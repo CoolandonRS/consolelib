@@ -1,9 +1,7 @@
-﻿using System.Net.NetworkInformation;
+﻿namespace CoolandonRS.consolelib.Arg.Contracts;
 
-namespace CoolandonRS.consolelib.ArgContract;
-
-using IAC = CoolandonRS.consolelib.ArgContract.IArgContract;
-using LAC = CoolandonRS.consolelib.ArgContract.LambdaArgContract;
+using IAC = IArgContract;
+using LAC = LambdaArgContract;
 
 /// <summary>
 /// A system to validate the way a user passed in arguments.

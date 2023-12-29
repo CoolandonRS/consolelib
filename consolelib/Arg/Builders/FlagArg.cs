@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace CoolandonRS.consolelib.Args; 
+namespace CoolandonRS.consolelib.Arg.Builders; 
 
 public class FlagArg : Arg<bool> {
     // while cast is a non-nullable field, we can get away with it since the only use of `cast` is in `Set(string)` which is overridden.

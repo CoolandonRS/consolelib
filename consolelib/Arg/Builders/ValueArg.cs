@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace CoolandonRS.consolelib.Args; 
+namespace CoolandonRS.consolelib.Arg.Builders; 
 
 public class ValueArg<T> : Arg<T> {
     /// <summary>

@@ -1,4 +1,6 @@
-﻿namespace consolelib_tests; 
+﻿using CoolandonRS.consolelib.Arg;
+
+namespace consolelib_tests; 
 
 [TestFixture, TestOf(typeof(ArgValueSplit))]
 public class ArgValueSplitTests {
