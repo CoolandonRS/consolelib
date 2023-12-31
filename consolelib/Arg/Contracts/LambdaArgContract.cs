@@ -1,9 +1,9 @@
 ﻿namespace CoolandonRS.consolelib.Arg.Contracts;
 
 internal class LambdaArgContract : IArgContract {
-    private readonly Func<ArgHandler, bool> func;
+    private readonly Func<ArgHandler, IArgContract.Result> func;
 
-    public bool Eval(ArgHandler handler) => func(handler);
+    public IArgContract.Result Eval(ArgHandler handler) => func(handler);
 
-    public LambdaArgContract(Func<ArgHandler, bool> func, string? msg = null) => this.func = func;
+    public LambdaArgContract(Func<ArgHandler, IArgContract.Result> func, string? msg = null) => this.func = func;
 }

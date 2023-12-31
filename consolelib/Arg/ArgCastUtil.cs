@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 
@@ -17,6 +18,7 @@ public static class ArgCastUtil {
     /// You should avoid using this. 
     /// </summary>
     /// <exception cref="MissingMethodException">If neither a matching method nor constructor were found.</exception>
+    [RequiresUnreferencedCode("Checks for an existing T.Parse(string) or T(string)")]
     public static T TryFindParse<T>(string str) {
         var type = typeof(T);
         if (lookup.TryGetValue(type, out var value)) return (T)value.Invoke(str);
@@ -53,7 +55,7 @@ public static class ArgCastUtil {
     /// Given a cast for a type, provides a cast to an array of that type.
     /// </summary>
     public static Func<string, T[]> GetArrayCast<T>(Func<string, T> cast, char[]? delim = null) {
-        delim ??= new[] { ',' };
+        delim ??= [','];
         return str => str.Split(delim).Select(cast).ToArray();
     }
 }
