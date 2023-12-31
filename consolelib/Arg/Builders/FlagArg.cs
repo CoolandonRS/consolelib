@@ -8,11 +8,9 @@ public class FlagArg : Arg<bool> {
     /// <summary>
     /// Recommended to use <see cref="FlagArg(string,bool)"/> unless you know what you're doing.
     /// </summary>
-    public FlagArg(string name, string desc, string rgx, bool @default = false) : base(name, desc, new Regex(rgx), null, @default, _ => true) {
-    }
+    public FlagArg(string name, string desc, string rgx, bool @default = false) : base(name, desc, new Regex(rgx), null, @default, _ => true) { }
 
-    public FlagArg(string name, string desc, bool @default = false) : this(name, desc, $"^--{name}$", @default) {
-    }
+    public FlagArg(string name, string desc, bool @default = false) : this(name, desc, $"^--{name}$", @default) { }
     
     public override IArg.SetStatus Set(string val) {
         if (!isDefault) return IArg.SetStatus.AlreadySet;
