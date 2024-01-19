@@ -63,7 +63,26 @@ public class ArgHandlerTests {
     }
 
     [Test]
-    public void GenerateHelp() {
-        Assert.That(false); //TODO
+    public void Help() {
+        var argHandler = new ArgHandler(config, new SingleFlagArg("firstFlag", "the first flag", 'f'), new FlagArg("secondFlag", "the second flag"));
+        argHandler.Parse(["-f", "--help"]);
+        Assert.Multiple(() => {
+            Assert.That(argHandler.GenerateHelp(), Is.EqualTo("--help, -h, -?\n  Print help\n-f\n  the first flag\n--secondFlag\n  the second flag\n"), "Generate help failed");
+            Assert.That(argHandler.IsDefault("firstFlag"));
+        });
+    }
+
+    [Test]
+    public void Implicits() {
+        var argHandler = new ArgHandler(config, new ValueArg<int>("someValue", "just some num", 13, int.Parse), new SingleFlagArg("THEflag", "the most important flag", 'F'));
+        argHandler.Parse(["-F", "imp", "--someValue", "15", "imp2", "--", "-v"]);
+        var implicits = argHandler.GetImplicits();
+        Assert.Multiple(() => {
+            Assert.That(implicits, Has.Length.EqualTo(3), "Incorrect number of implicits found");
+            Assert.That(implicits[0], Is.EqualTo("imp"), "First implicit from GetImplicits() is incorrect");
+            Assert.That(argHandler.GetImplicit(1), Is.EqualTo("imp2"), "Second implicit from GetImplicit(1) is incorrect");
+            Assert.That(implicits[2], Is.EqualTo("-v"), "Third implicit from GetImplicits() is incorrect");
+            Assert.That(implicits[2], Is.EqualTo(argHandler.GetImplicit(2)), "Third implicit from GetImplicits() does not equal GetImplicit(2)");
+        });
     }
 }
