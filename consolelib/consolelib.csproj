@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -21,5 +21,21 @@
     
     <ItemGroup>
         <None Include="../README.md" Pack="true" PackagePath="\"/>
+        <InternalsVisibleTo Include="consolelib-tests"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Update="Arg\Contracts\IAC.Message.cs">
+        <DependentUpon>IArgContract.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Arg\Contracts\IAC.ConditionalString.cs">
+        <DependentUpon>IArgContract.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Arg\Contracts\IAC.Result.cs">
+        <DependentUpon>IArgContract.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Arg\Contracts\VR.StringHierarchy.cs">
+        <DependentUpon>ValidationResult.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

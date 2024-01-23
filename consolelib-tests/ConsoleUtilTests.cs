@@ -1,5 +1,6 @@
 namespace consolelib_tests;
 
+[TestFixture, TestOf(typeof(ConsoleUtil))]
 public class ConsoleUtilTests {
     // I have no clue how to cover WriteColored(Line)... So, I'm not.
 

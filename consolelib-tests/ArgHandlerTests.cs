@@ -1,77 +1,88 @@
-﻿namespace consolelib_tests; 
+﻿using CoolandonRS.consolelib.Arg;
+using CoolandonRS.consolelib.Arg.Builders;
 
+namespace consolelib_tests;
+
+[TestFixture, TestOf(typeof(ArgHandler))]
 public class ArgHandlerTests {
-    private ArgHandler handler;
-    private static string helpVerif = "-f\n\tFlag\n-T\n\tTest\n-?\n\tShows help\n--val=[int]\n\tTest Value\n--quote=[string]\n\tQuoted Test";
+    private static readonly ArgHandlerConfig config = new() {
+        DoErrors = true,
+        ErrorStyle = ArgHandlerConfig.ArgErrorStyle.Throw
+    };
     
-    [SetUp]
-    public void SetUp() {
-        handler = new ArgHandler(new Dictionary<string, ArgData>() {
-            { "val", new ArgData(new ArgDesc("--val=[int]", "Test Value")) },
-            { "quote", new ArgData(new ArgDesc("--quote=[string]", "Quoted Test")) }
-        }, new Dictionary<char, FlagData>() {
-            { 'f', new FlagData(new ArgDesc("-f", "Flag")) },
-            { 'T', new FlagData(new ArgDesc("-T", "Test")) }
+    [Test]
+    public void ParseSingleFlagArg() {
+        var argHandler = new ArgHandler(config, new SingleFlagArg("verbose", "print verbose", 'v'), new SingleFlagArg("!verbose", "don't print verbose", 'V', true));
+        Assert.Multiple(() => {
+            Assert.DoesNotThrow(() => argHandler.Parse(["-v"]), "Parse threw");
+            Assert.That(argHandler.IsDefault("verbose"), Is.False, "Default reported when present");
+            Assert.That(argHandler.IsDefault("!verbose"), Is.True, "Nondefault reported when not present");
+            Assert.That(argHandler.Get<bool>("verbose"), Is.True, "Get passthrough failure");
+            Assert.Throws<InvalidCastException>(() => argHandler.Get<HttpClient>("!verbose"), "Non throw on invalid cast");
         });
     }
 
     [Test]
-    public void GetHelpString() {
-        Assert.That(handler.GetHelpString(), Is.EqualTo(helpVerif), "Incorrect HelpString");
-    }
-
-    [Test]
-    public void GetValue() {
-        Assert.That(handler.GetValue("val").IsSet, Is.False, "GetValue Failure");
-    }
-
-    [Test]
-    public void GetFlag() {
-        Assert.That(handler.GetFlag('f'), Is.False, "GetFlag Failure");
-    }
-
-    [Test]
-    public void ParseArgFlagFail() {
-        handler.ParseArgs(new[] {"-a"});
-        Assert.That(handler.HasErrors, Is.True, "Flag Error Unrecognized");
-    }
-
-    [Test]
-    public void ParseArgValueFail() {
-        handler.ParseArgs(new[] {"--abc=def"});
-        Assert.That(handler.HasErrors, Is.True, "value Error Unrecognized");
-    }
-
-    [Test]
-    public void ParseArgFlag() {
-        handler.ParseArgs(new[] {"-f"});
-        Assert.That(handler.GetFlag('f'), Is.True, "Flag Parse Failure");
-    }
-
-    [Test]
-    public void ParseArgMultiFlag() {
-        handler.ParseArgs(new[] {"-fT"});
-        Assert.That(handler.GetFlag('f') && handler.GetFlag('T'), Is.True, "Flag Parse Failure");
-    }
-
-    [Test]
-    public void ParseArgValue() {
-        handler.ParseArgs(new[] {"--val=123"});
-        Assert.That(handler.GetValue("val").AsInt(), Is.EqualTo(123), "Value Parse Failure");
-    }
-    
-    [Test]
-    public void ParseQuotedArgValue() {
-        handler.ParseArgs(new[] {"--quote=\"Hello Friend\""});
-        Assert.That(handler.GetValue("quote").AsString(), Is.EqualTo("Hello Friend"), "Quoted Value Parse Failure");
-    }
-
-    [Test]
-    public void ParseArgBoth() {
-        handler.ParseArgs(new[] {"-T", "--val=456"});
+    public void ParseNonSingleFlagArg() {
+        var argHandler = new ArgHandler(config, new FlagArg("verbose", "print verbose"), new FlagArg("fbi-trigger", "notify fbi of suspicious activity", true));
         Assert.Multiple(() => {
-            Assert.That(handler.GetFlag('T'), Is.True, "Flag Parse Failure");
-            Assert.That(handler.GetValue("val").AsInt(), Is.EqualTo(456), "Value Parse Failure");
+            Assert.DoesNotThrow(() => argHandler.Parse(["--verbose"]), "Parse threw");
+            Assert.That(argHandler.IsDefault("verbose"), Is.False, "Default reported when present");
+            Assert.That(argHandler.IsDefault("fbi-trigger"), Is.True, "Non-default reported when not present");
+            Assert.That(argHandler.Get<bool>("verbose"), Is.True, "Get passthrough failure");
+            Assert.Throws<InvalidCastException>(() => argHandler.Get<int>("fbi-trigger"), "Non throw on invalid cast");
+        });
+    }
+
+    [Test]
+    public void ParseSingleValueArg() {
+        var argHandler = new ArgHandler(config, new SingleValueArg<int>("number", "number", 'n', 0, int.Parse), new SingleValueArg<int>("number2", "number2", 'N', 2, int.Parse));
+        Assert.Multiple(() => {
+            Assert.Throws<NonTrailingSingleValueArgException>(() => argHandler.Parse(["-nN", "2"]), "Non trailing single value didn't error");
+            Assert.Throws<InsufficientDataException>(() => argHandler.Parse(["-n"]), "Success on insufficient data");
+            Assert.DoesNotThrow(() => argHandler.Parse(["-n", "3"]), "Parse threw");
+            Assert.That(argHandler.IsDefault("number"), Is.False, "Default reported when present");
+            Assert.That(argHandler.IsDefault("number2"), Is.True, "Nondefault reported when not present");
+            Assert.That(argHandler.Get<int>("number"), Is.EqualTo(3), "Get passthrough failure");
+            Assert.Throws<InvalidCastException>(() => argHandler.Get<HttpClient>("number"), "Non throw on invalid cast");
+        });
+    }
+
+    [Test]
+    public void ParseNonSingleValueArg() {
+        var argHandler = new ArgHandler(config, new ValueArg<int>("number", "number", 0, int.Parse), new ValueArg<int>("number2", "number2", 2, int.Parse));
+        Assert.Multiple(() => {
+            Assert.Throws<InsufficientDataException>(() => argHandler.Parse(["--number"]), "Success on insufficient data");
+            Assert.DoesNotThrow(() => argHandler.Parse(["--number", "12"]), "Parse threw");
+            Assert.That(argHandler.IsDefault("number"), Is.False, "Default reported when present");
+            Assert.That(argHandler.IsDefault("number2"), Is.True, "Nondefault reported when not present");
+            Assert.That(argHandler.Get<int>("number"), Is.EqualTo(12), "Get passthrough failure");
+            Assert.Throws<InvalidCastException>(() => argHandler.Get<bool>("number"), "Non throw on invalid cast");
+            Assert.DoesNotThrow(() => argHandler.Parse(["--number2=15"]), "Parse threw");
+        });
+    }
+
+    [Test]
+    public void Help() {
+        var argHandler = new ArgHandler(config, new SingleFlagArg("firstFlag", "the first flag", 'f'), new FlagArg("secondFlag", "the second flag"));
+        argHandler.Parse(["-f", "--help"]);
+        Assert.Multiple(() => {
+            Assert.That(argHandler.GenerateHelp(), Is.EqualTo("--help, -h, -?\n  Print help\n-f\n  the first flag\n--secondFlag\n  the second flag\n"), "Generate help failed");
+            Assert.That(argHandler.IsDefault("firstFlag"));
+        });
+    }
+
+    [Test]
+    public void Implicits() {
+        var argHandler = new ArgHandler(config, new ValueArg<int>("someValue", "just some num", 13, int.Parse), new SingleFlagArg("THEflag", "the most important flag", 'F'));
+        argHandler.Parse(["-F", "imp", "--someValue", "15", "imp2", "--", "-v"]);
+        var implicits = argHandler.GetImplicits();
+        Assert.Multiple(() => {
+            Assert.That(implicits, Has.Length.EqualTo(3), "Incorrect number of implicits found");
+            Assert.That(implicits[0], Is.EqualTo("imp"), "First implicit from GetImplicits() is incorrect");
+            Assert.That(argHandler.GetImplicit(1), Is.EqualTo("imp2"), "Second implicit from GetImplicit(1) is incorrect");
+            Assert.That(implicits[2], Is.EqualTo("-v"), "Third implicit from GetImplicits() is incorrect");
+            Assert.That(implicits[2], Is.EqualTo(argHandler.GetImplicit(2)), "Third implicit from GetImplicits() does not equal GetImplicit(2)");
         });
     }
 }
