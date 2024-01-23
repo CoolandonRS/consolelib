@@ -1,5 +1,8 @@
-﻿namespace CoolandonRS.consolelib.Arg.Contracts;
+﻿using System.Runtime.Versioning;
 
+namespace CoolandonRS.consolelib.Arg.Contracts;
+
+[RequiresPreviewFeatures]
 public readonly partial struct ValidationResult {
     public readonly bool Success;
     public readonly StringHierarchy? Message;

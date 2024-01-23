@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Versioning;
 using CoolandonRS.consolelib.Arg.Contracts;
 
 namespace CoolandonRS.consolelib.Arg; 
@@ -142,12 +144,14 @@ public class ArgHandler {
     /// </summary>
     /// <seealso cref="Validate(IArgContract)"/>
     /// <seealso cref="ArgContracts"/>
+    [RequiresPreviewFeatures]
     public ValidationResult Validate(params IArgContract[] contracts) => Validate(ArgContracts.And(contracts));
     /// <summary>
     /// Returns the response of the given contract.
     /// </summary>
     /// <seealso cref="Validate(IArgContract[])"/>
     /// <seealso cref="ArgContracts"/>
+    [RequiresPreviewFeatures]
     public ValidationResult Validate(IArgContract contract) => new(contract.Eval(this));
     
     

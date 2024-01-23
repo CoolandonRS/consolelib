@@ -1,13 +1,17 @@
 ﻿using System.ComponentModel;
+using System.Runtime.Versioning;
 
 namespace CoolandonRS.consolelib.Arg.Contracts;
 
+
+#pragma warning disable CA2252 // This requires preview features, so we disable the warning for using preview features.
 using IAC = IArgContract;
 using LAC = LambdaArgContract;
 using Result = IArgContract.Result;
 using Status = IArgContract.Status;
 using Message = IArgContract.Message;
 using CondStr = IArgContract.ConditionalString;
+#pragma warning restore CA2252
 
 /// <summary>
 /// A system to validate the way a user passed in arguments.
@@ -29,6 +33,7 @@ using CondStr = IArgContract.ConditionalString;
 /// <seealso cref="Relations"/>
 /// <seealso cref="Lambda"/>
 /// </summary>
+[RequiresPreviewFeatures]
 public static class ArgContracts {
     /// <summary> Returns true. </summary>
     public static IAC Always(string? msg = null) => new LAC(_ => new Result(Status.Fulfilled, msg));
