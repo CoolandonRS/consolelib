@@ -1,5 +1,10 @@
-﻿namespace CoolandonRS.consolelib.Arg.Contracts;
+﻿using System.Runtime.Versioning;
 
+namespace CoolandonRS.consolelib.Arg.Contracts;
+
+/// <summary>
+/// Not guaranteed to work since writing unit tests for string manipulation sounds like a pain.
+/// </summary>
 public partial struct ValidationResult {
     public readonly struct StringHierarchy(string? val = null, StringHierarchy[]? children = null) {
         public readonly string? Val = val;
@@ -16,7 +21,7 @@ public partial struct ValidationResult {
 
         /// <param name="blankRepresentation">What to show when Val is null</param>
         /// <param name="prefix">A prefix that appears before each child</param>
-        /// <param name="depthStr">A string that gets added to initPrefix for each recursion</param>
+        /// <param name="depthStr">A string that gets added to prefix for each recursion</param>
         /// <param name="parentDelim">The delimiter between a parent and its children</param>
         /// <param name="childDelim">The delimiter between children of the same parent</param>
         /// <example><code>ToString("-", "", "  ", "\n", "\n")</code></example>

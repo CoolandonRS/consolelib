@@ -140,18 +140,16 @@ public class ArgHandler {
     public bool IsDefault(string name) => namedArgs[name].IsDefault();
 
     /// <summary>
-    /// Evaluates ArgContracts.And(contracts)
+    /// Evaluates ArgContracts.All(contracts)
     /// </summary>
     /// <seealso cref="Validate(IArgContract)"/>
     /// <seealso cref="ArgContracts"/>
-    [RequiresPreviewFeatures]
-    public ValidationResult Validate(params IArgContract[] contracts) => Validate(ArgContracts.And(contracts));
+    public ValidationResult Validate(params IArgContract[] contracts) => Validate(ArgContracts.All(contracts));
     /// <summary>
     /// Returns the response of the given contract.
     /// </summary>
     /// <seealso cref="Validate(IArgContract[])"/>
     /// <seealso cref="ArgContracts"/>
-    [RequiresPreviewFeatures]
     public ValidationResult Validate(IArgContract contract) => new(contract.Eval(this));
     
     

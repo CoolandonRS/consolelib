@@ -2,7 +2,6 @@
 
 namespace CoolandonRS.consolelib.Arg.Contracts;
 
-[RequiresPreviewFeatures]
 internal class LambdaArgContract : IArgContract {
     private readonly Func<ArgHandler, IArgContract.Result> func;
 

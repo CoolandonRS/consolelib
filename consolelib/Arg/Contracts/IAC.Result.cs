@@ -16,7 +16,7 @@ public partial interface IArgContract {
 
         public bool WasSuccess(bool strict = false) => Status switch {
             Status.Fulfilled => true,
-            Status.Ignored => strict,
+            Status.Ignored => !strict,
             Status.Unfulfilled => false,
             _ => throw new InvalidEnumArgumentException()
         };

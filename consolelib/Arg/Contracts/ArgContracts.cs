@@ -3,15 +3,12 @@ using System.Runtime.Versioning;
 
 namespace CoolandonRS.consolelib.Arg.Contracts;
 
-
-#pragma warning disable CA2252 // This requires preview features, so we disable the warning for using preview features.
 using IAC = IArgContract;
 using LAC = LambdaArgContract;
 using Result = IArgContract.Result;
 using Status = IArgContract.Status;
 using Message = IArgContract.Message;
 using CondStr = IArgContract.ConditionalString;
-#pragma warning restore CA2252
 
 /// <summary>
 /// A system to validate the way a user passed in arguments.
@@ -33,7 +30,6 @@ using CondStr = IArgContract.ConditionalString;
 /// <seealso cref="Relations"/>
 /// <seealso cref="Lambda"/>
 /// </summary>
-[RequiresPreviewFeatures]
 public static class ArgContracts {
     /// <summary> Returns true. </summary>
     public static IAC Always(string? msg = null) => new LAC(_ => new Result(Status.Fulfilled, msg));
@@ -41,11 +37,11 @@ public static class ArgContracts {
     /// <summary> Returns false. </summary>
     public static IAC Never(string? msg = null) => new LAC(_ => new Result(Status.Unfulfilled, msg));
 
-    /// <inheritdoc cref="And(CondStr?,IAC[])"/>
-    public static IAC And(params IAC[] contracts) => And(null, contracts);
+    /// <inheritdoc cref="All(System.Nullable{CondStr},IAC[])"/>
+    public static IAC All(params IAC[] contracts) => All(null, contracts);
     /// <summary> Returns true if all contained contracts are true. </summary>
     /// <remarks> Always terminates when the first failure is found. </remarks>
-    public static IAC And(CondStr? msg, params IAC[] contracts) => new LAC(ah => {
+    public static IAC All(CondStr? msg, params IAC[] contracts) => new LAC(ah => {
         List<Message> msgs = [];
         return new Result(contracts.All(c => {
             var res = c.Eval(ah);
@@ -54,11 +50,11 @@ public static class ArgContracts {
         }), msg, msgs.ToArray());
     });
 
-    /// <inheritdoc cref="Or(CondStr?,IAC[])"/>
-    public static IAC Or(params IAC[] contracts) => Or(null, contracts);
+    /// <inheritdoc cref="Any(System.Nullable{CondStr},IAC[])"/>
+    public static IAC Any(params IAC[] contracts) => Any(null, contracts);
     /// <summary> Returns true if at least one of the contained contracts are true. </summary>
     /// <remarks> Always terminates when the first success is found. </remarks>
-    public static IAC Or(CondStr? msg, params IAC[] contracts) => new LAC(ah => {
+    public static IAC Any(CondStr? msg, params IAC[] contracts) => new LAC(ah => {
         List<Message> msgs = [];
         return new Result(contracts.Any(c => {
             var res = c.Eval(ah);
@@ -71,7 +67,7 @@ public static class ArgContracts {
     public static IAC None(params IAC[] contracts) => None(null, contracts);
     /// <summary> Returns true if none of the contained contracts are true. </summary>
     /// <remarks> Always terminates when the first success is found. </remarks>
-    public static IAC None(CondStr? msg, params IAC[] contracts) => Not(Or(msg, contracts), null);
+    public static IAC None(CondStr? msg, params IAC[] contracts) => Not(Any(msg, contracts), null);
 
     /// <summary> Negates an ArgContract. </summary>
     public static IAC Not(IAC contract, CondStr? msg = null) => new LAC(ah => contract.Eval(ah).Invert(msg));
@@ -108,14 +104,13 @@ public static class ArgContracts {
     public static IAC Lambda(Func<ArgHandler, Result> func) => new LAC(func); // Do this instead of publicizing LAC for consistency and since I like it more.
 
     /// <summary> Returns the result of @true if cond is true, and @false if cond is false. @false is by default ArgContracts.Never() </summary>
-    public static IAC If(IAC cond, IAC @true, IAC? @false, CondStr? msg = null) {
-        @false ??= Never();
+    public static IAC If(IAC cond, IAC @true, IAC? @false = null, CondStr? msg = null) {
         return new LAC(ah => {
             var res = cond.Eval(ah);
             return res.Status switch {
                 Status.Ignored => new Result(Status.Ignored, msg, res.Msg),
                 Status.Fulfilled => IfResult(res.Msg, @true.Eval(ah)),
-                Status.Unfulfilled => IfResult(res.Msg, @false.Eval(ah)),
+                Status.Unfulfilled => IfResult(res.Msg, (@false ?? Never()).Eval(ah)),
                 _ => throw new InvalidEnumArgumentException()
             };
         });
@@ -136,7 +131,7 @@ public static class ArgContracts {
     public static IAC Relations(string arg, string[][] depends, string[] conflicts, CondStr? msg = null) => new LAC(ah => {
         if (ah.IsDefault(arg)) return new Result(Status.Ignored, msg);
         foreach (var depend in depends) {
-                if (depend.All(ah.IsDefault)) return new Result(Status.Unfulfilled, msg, $"None found: {string.Join(", ", depend)}");
+            if (depend.All(ah.IsDefault)) return new Result(Status.Unfulfilled, msg, $"None found: {string.Join(", ", depend)}");
         }
         foreach (var conflict in conflicts) {
             if (!ah.IsDefault(conflict)) return new Result(Status.Unfulfilled, msg, $"Found: {conflict}");

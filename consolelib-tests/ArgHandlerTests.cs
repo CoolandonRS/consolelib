@@ -1,5 +1,6 @@
 ﻿using CoolandonRS.consolelib.Arg;
 using CoolandonRS.consolelib.Arg.Builders;
+using CoolandonRS.consolelib.Arg.Contracts;
 
 namespace consolelib_tests;
 
@@ -83,6 +84,17 @@ public class ArgHandlerTests {
             Assert.That(argHandler.GetImplicit(1), Is.EqualTo("imp2"), "Second implicit from GetImplicit(1) is incorrect");
             Assert.That(implicits[2], Is.EqualTo("-v"), "Third implicit from GetImplicits() is incorrect");
             Assert.That(implicits[2], Is.EqualTo(argHandler.GetImplicit(2)), "Third implicit from GetImplicits() does not equal GetImplicit(2)");
+        });
+    }
+
+    [Test]
+    public void Contracts() {
+        var argHandler = new ArgHandler();
+        Assert.Multiple(() => {
+            Assert.That(argHandler.Validate(ArgContracts.Always()).Success, Is.True, "Validation failed with succeeding contract");
+            Assert.That(argHandler.Validate(ArgContracts.Never()).Success, Is.False, "Validation succeeded with failing contract");
+            Assert.That(argHandler.Validate(ArgContracts.Always(), ArgContracts.Always()).Success, Is.True, "Multiple validation failed with only succeeding children");
+            Assert.That(argHandler.Validate(ArgContracts.Always(), ArgContracts.Never()).Success, Is.False, "Multiple validation succeeded with failing child");
         });
     }
 }
