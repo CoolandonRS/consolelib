@@ -10,7 +10,7 @@ public class ArgTests {
     private const string name = "test";
     private const string desc = "testDesc";
     private readonly Regex prefixRgx = new("--abc");
-    private readonly ArgValueSplit split = new ArgValueSplit([]);
+    private readonly ArgValueSplit split = new([]);
     private const int val = 1;
 
     [SetUp]
@@ -30,7 +30,7 @@ public class ArgTests {
             Assert.That(testArg.Validate("--abc"), Is.True, "Validate truth failure");
             Assert.That(testArg.Validate("-def"), Is.False, "Validate false success");
             Assert.That(testArg.Type(), Is.EqualTo(typeof(int)));
-            Assert.That(testArg.IsSingle(), Is.False, "Single truth on noncomplex Arg<> call");
+            Assert.That(testArg.GetPrefixType(), Is.EqualTo(IArg.PrefixType.Double), "Nondouble prefix on noncomplex Arg<> call");
             Assert.That(testArg.GetCall(), Is.Null, "Non null Call on noncomplex Arg<> call");
         });
     }
@@ -52,8 +52,8 @@ public class ArgTests {
         var value = new ValueArg<int>("monkeys", "Number of monkeys", 0, int.Parse);
         var singleValue = new SingleValueArg<string?>("name", "Name of primary monkey", 'n', null, s => s);
         Assert.Multiple(() => {
-            Assert.That(value.IsSingle, Is.False, "Nonsingle reported single");
-            Assert.That(singleValue.IsSingle, Is.True, "Single reported nonsingle");
+            Assert.That(value.GetPrefixType(), Is.EqualTo(IArg.PrefixType.Double), "Double reported incorrectlty");
+            Assert.That(singleValue.GetPrefixType(), Is.EqualTo(IArg.PrefixType.Single), "Single reported incorrectly");
             // While technically we should test Set(string) here to make sure that the constructor initialized the arg correctly since it doesn't overload I don't care enough to.
         });
     }
@@ -63,8 +63,8 @@ public class ArgTests {
         var flag = new FlagArg("monkey", "are monkeys present?");
         var singleFlag = new SingleFlagArg("no cookies", "are no cookies present?", 'c', true);
         Assert.Multiple(() => {
-            Assert.That(flag.IsSingle, Is.False, "Nonsingle returned single");
-            Assert.That(singleFlag.IsSingle, Is.True, "Single returned nonsingle");
+            Assert.That(flag.GetPrefixType(), Is.EqualTo(IArg.PrefixType.Double), "Nonsingle reported incorrectly");
+            Assert.That(singleFlag.GetPrefixType(), Is.EqualTo(IArg.PrefixType.Single), "Single reported incorrectly");
             Assert.That(flag.IsDefault, Is.True, "default false reported nondefault");
             Assert.That(singleFlag.IsDefault, Is.True, "default true reported nondefault");
             Assert.That(flag.Get(), Is.False, "Default false returned true");

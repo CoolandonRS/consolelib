@@ -17,6 +17,7 @@
         <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
         <PackageTags>cli console args arguments</PackageTags>
         <PackageReleaseNotes>release ArgContracts</PackageReleaseNotes>
+        <TrimmableAssembly>true</TrimmableAssembly>
     </PropertyGroup>
     
     <ItemGroup>
@@ -25,17 +26,6 @@
     </ItemGroup>
     
     <ItemGroup>
-      <Compile Update="Arg\Contracts\IAC.Message.cs">
-        <DependentUpon>IArgContract.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Arg\Contracts\IAC.ConditionalString.cs">
-        <DependentUpon>IArgContract.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Arg\Contracts\IAC.Result.cs">
-        <DependentUpon>IArgContract.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Arg\Contracts\VR.StringHierarchy.cs">
-        <DependentUpon>ValidationResult.cs</DependentUpon>
-      </Compile>
+      <Folder Include="Args\Contracts\" />
     </ItemGroup>
 </Project>

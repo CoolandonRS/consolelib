@@ -36,8 +36,8 @@ public static class ConsoleUtil {
         return RegexQuery(prompt, regex, newLine);
     }
 
-    private static readonly string[] agreements = { "y", "yes" };
-    private static readonly string[] disagreements = { "n", "no" };
+    private static readonly string[] agreements = ["y", "yes"];
+    private static readonly string[] disagreements = ["n", "no"];
     public static bool BoolQuery(string prompt, bool assume = false, bool newLine = false) {
         var answer = StringQuery(prompt, newLine);
         return (assume ? disagreements : agreements).Contains(answer.ToLower().Trim());
